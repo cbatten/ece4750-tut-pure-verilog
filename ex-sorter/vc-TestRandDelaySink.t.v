@@ -99,7 +99,7 @@ module top;
   initial begin
     `define SRC_MEM  th.src.src.m
     `define SINK_MEM th.sink.sink.m
-    `include "vc-test-src-sink-input-gen_ordered.py.v"
+    `include "vc-test-src-sink-gen-input_ordered.py.v"
   end
 
   // Helper task to run test
