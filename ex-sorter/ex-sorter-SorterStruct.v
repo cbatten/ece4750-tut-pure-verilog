@@ -195,6 +195,8 @@ module ex_sorter_SorterStruct
   // Assertions
   //----------------------------------------------------------------------
 
+  `ifndef SYNTHESIS
+
   always @( posedge clk ) begin
     if ( !reset ) begin
       `VC_ASSERT_NOT_X( in_val );
@@ -205,9 +207,13 @@ module ex_sorter_SorterStruct
     end
   end
 
+  `endif /* SYNTHESIS */
+
   //----------------------------------------------------------------------
   // Line Tracing
   //----------------------------------------------------------------------
+
+  `ifndef SYNTHESIS
 
   logic [(`VC_TRACE_NBITS_TO_NCHARS(p_nbits)*4+5)*8-1:0] str;
 
@@ -245,6 +251,8 @@ module ex_sorter_SorterStruct
 
   end
   `VC_TRACE_END
+
+  `endif /* SYNTHESIS */
 
 endmodule
 

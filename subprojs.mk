@@ -12,6 +12,7 @@
 #
 
 subprojs = \
+  ex-basics \
   vc \
   ex-sorter \
 

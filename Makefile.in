@@ -182,6 +182,27 @@ $(2)_junk += $$($(2)_sim_exes)
 
 $(2)_junk += $$($(2)_eval_outs)
 
+# Create dependency files for optional sources
+
+$(2)_opt_deps := $$(patsubst %.v,%.d,$$($(2)_opt_srcs))
+
+$$($(2)_opt_deps) : %.d : %.v
+	$(VMKDEPS) -I $(src_dir)/$(1) $$($(2)_incs) $$* $$<
+
+$(2)_deps += $$($(2)_opt_deps)
+$(2)_junk += $$($(2)_opt_deps)
+
+# Build optional sources
+
+$(2)_opt_exes := $$(patsubst %.v, %, $$($(2)_opt_srcs))
+
+$$($(2)_opt_exes) : % : %.v
+	$(scripts_dir)/warnings2errors \
+    $(VCOMP) $(VCOMP_FLAGS) -o $$@ \
+    -I $(src_dir)/$(1) $$($(2)_incs) $$<
+
+$(2)_junk += $$($(2)_opt_exes)
+
 # Other subpkg specific targets
 
 $(1)-all : $$($(2)_sim_exes)
