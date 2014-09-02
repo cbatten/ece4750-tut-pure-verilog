@@ -99,8 +99,7 @@ module vc_TestSink
   // Verification logic
   //----------------------------------------------------------------------
 
-  reg [31:0] num_failed_next;
-  reg [31:0] num_failed;
+  reg        failed;
   reg  [3:0] verbose;
 
   initial begin
@@ -110,40 +109,34 @@ module vc_TestSink
 
   always @( posedge clk ) begin
     if ( reset ) begin
-      num_failed <= 0;
+      failed <= 0;
     end
     else if ( !reset && go ) begin
 
-      if ( verbose > 1 )
+      if ( verbose > 0 )
         $display( "                %m checking message number %0d", index );
 
       // Cut-and-paste from VC_TEST_NET in vc-test.v
 
       if ( msg === 'hz ) begin
-        num_failed_next = num_failed + 1;
-        if ( verbose > 0 ) begin
-          $display( "     [ FAILED ]%s, expected = %x, actual = %x",
-                    "msg", m[index], msg );
-        end
+        failed = 1;
+        $display( "     [ FAILED ] %s, expected = %x, actual = %x",
+                  "msg", m[index], msg );
       end
       else
         casez ( msg )
           m[index] :
-            if ( verbose > 1 )
-               $display( "     [ passed ]%s, expected = %x, actual = %x",
+            if ( verbose > 0 )
+               $display( "     [ passed ] %s, expected = %x, actual = %x",
                          "msg", m[index], msg );
           default : begin
-            num_failed_next = num_failed + 1;
-            if ( verbose > 0 ) begin
-              $display( "     [ FAILED ]%s, expected = %x, actual = %x",
-                        "msg", m[index], msg );
-            end
+            failed = 1;
+            $display( "     [ FAILED ] %s, expected = %x, actual = %x",
+                      "msg", m[index], msg );
           end
         endcase
 
-      num_failed <= num_failed_next;
-
-      if ( p_sim_mode && (num_failed_next > 0) ) begin
+      if ( p_sim_mode && (failed == 1) ) begin
         $display( "" );
         $display( " ERROR: Test sink found a failure!" );
         $display( "  - module   : %m" );

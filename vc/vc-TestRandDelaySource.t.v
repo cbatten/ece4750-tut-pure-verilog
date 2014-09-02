@@ -19,7 +19,6 @@ module TestHarness
   input         clk,
   input         reset,
   input  [31:0] max_delay,
-  output [31:0] num_failed,
   output        done
 );
 
@@ -48,7 +47,6 @@ module TestHarness
     .val        (val),
     .rdy        (rdy),
     .msg        (msg),
-    .num_failed (num_failed),
     .done       (sink_done)
   );
 
@@ -79,7 +77,6 @@ module top;
 
   reg         th_reset = 1;
   reg  [31:0] th_max_delay;
-  wire [31:0] th_num_failed;
   wire        th_done;
 
   TestHarness th
@@ -87,7 +84,6 @@ module top;
     .clk        (clk),
     .reset      (th_reset),
     .max_delay  (th_max_delay),
-    .num_failed (th_num_failed),
     .done       (th_done)
   );
 
@@ -111,7 +107,6 @@ module top;
       #10;
     end
 
-    `VC_TEST_INCREMENT_NUM_FAILED( th_num_failed );
     `VC_TEST_NET( th_done, 1'b1 );
   end
   endtask

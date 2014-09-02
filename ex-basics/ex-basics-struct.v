@@ -1,10 +1,10 @@
 // Declare struct type
 
-typedef struct packed {
-  logic [3:0] x;
-  logic [3:0] y;
-  logic [3:0] z;
-} point_t;
+typedef struct packed {  // Packed format:
+  logic [3:0] x;         //   11 8 7  4 3  0
+  logic [3:0] y;         //  +----+----+----+
+  logic [3:0] z;         //  | x  | y  | z  |
+} point_t;               //  +----+----+----+
 
 module top;
 

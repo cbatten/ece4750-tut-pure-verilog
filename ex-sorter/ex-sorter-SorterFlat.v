@@ -227,7 +227,6 @@ module ex_sorter_SorterFlat
   //----------------------------------------------------------------------
 
   `ifndef SYNTHESIS
-
   always @( posedge clk ) begin
     if ( !reset ) begin
       `VC_ASSERT_NOT_X( in_val );
@@ -237,7 +236,6 @@ module ex_sorter_SorterFlat
       `VC_ASSERT_NOT_X( out_val );
     end
   end
-
   `endif /* SYNTHESIS */
 
   //----------------------------------------------------------------------

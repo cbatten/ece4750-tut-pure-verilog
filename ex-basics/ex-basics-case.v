@@ -19,11 +19,11 @@ module top;
       default : a = 8'h0e;
     endcase
 
-    $display( "sel = 2'b01, a = %x", a );
+    $display( "sel = 01, a = %x", a );
 
     // case statement w/ X
 
-    sel = 2'b0x;
+    sel = 2'bxx;
 
     case ( sel )
       2'b00   : a = 8'h0a;
@@ -33,9 +33,10 @@ module top;
       default : a = 8'h0e;
     endcase
 
-    $display( "sel = 2'bxx, a = %x", a );
+    $display( "sel = xx, a = %x", a );
 
-    // Do not use x's in the case selection items for a case
+    // Do not use x's in the case
+    // selection items
 
     sel = 2'bx0;
 
@@ -49,7 +50,7 @@ module top;
       default : a = 8'h00;
     endcase
 
-    $display( "sel = 2'bx0, a = %x", a );
+    $display( "sel = x0, a = %x", a );
 
   end
 

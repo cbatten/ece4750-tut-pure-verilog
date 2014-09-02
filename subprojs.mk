@@ -13,6 +13,7 @@
 
 subprojs = \
   ex-basics \
+  ex-gcd \
   vc \
   ex-sorter \
 

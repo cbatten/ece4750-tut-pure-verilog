@@ -16,10 +16,9 @@ module TestHarness
   parameter p_msg_nbits = 1,
   parameter p_num_msgs  = 1024
 )(
-  input         clk,
-  input         reset,
-  output [31:0] num_failed,
-  output        done
+  input  clk,
+  input  reset,
+  output done
 );
 
   wire                   val;
@@ -46,7 +45,6 @@ module TestHarness
     .val        (val),
     .rdy        (rdy),
     .msg        (msg),
-    .num_failed (num_failed),
     .done       (sink_done)
   );
 
@@ -73,7 +71,6 @@ module top;
   // Test Case: 8b messages
   //----------------------------------------------------------------------
 
-  wire [31:0] t1_num_failed;
   wire        t1_done;
   reg         t1_reset = 1;
 
@@ -81,7 +78,6 @@ module top;
   (
     .clk        (clk),
     .reset      (t1_reset),
-    .num_failed (t1_num_failed),
     .done       (t1_done)
   );
 
@@ -103,7 +99,6 @@ module top;
       #10;
     end
 
-    `VC_TEST_INCREMENT_NUM_FAILED( t1_num_failed );
     `VC_TEST_NET( t1_done, 1'b1 );
   end
   `VC_TEST_CASE_END
@@ -112,7 +107,6 @@ module top;
   // Test Case: 12b messages
   //----------------------------------------------------------------------
 
-  wire [31:0] t2_num_failed;
   wire        t2_done;
   reg         t2_reset = 1;
 
@@ -120,7 +114,6 @@ module top;
   (
     .clk        (clk),
     .reset      (t2_reset),
-    .num_failed (t2_num_failed),
     .done       (t2_done)
   );
 
@@ -142,7 +135,6 @@ module top;
       #10;
     end
 
-    `VC_TEST_INCREMENT_NUM_FAILED( t2_num_failed );
     `VC_TEST_NET( t2_done, 1'b1 );
   end
   `VC_TEST_CASE_END

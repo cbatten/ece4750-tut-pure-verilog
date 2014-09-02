@@ -28,7 +28,7 @@ module top;
       : ( sel == 2'b11 ) ? 8'h0d
       :                    8'h0e;
 
-    $display( "sel = 1, c = %d", c );
+    $display( "sel = 1, c = %b", c );
 
     // nested ternary statement w/ X
 
@@ -40,7 +40,7 @@ module top;
       : ( sel == 2'b11 ) ? 8'h0d
       :                    8'h0e;
 
-    $display( "sel = x, c = %d", c );
+    $display( "sel = x, c = %b", c );
 
     sel = 2'bx0;
 
@@ -50,7 +50,8 @@ module top;
       : ( sel == 2'b11 ) ? 8'h0d
       :                    8'h0e;
 
-    $display( "sel = x, c = %d", c );
+    $display( "sel = x, c = %b", c );
+
   end
 
 endmodule

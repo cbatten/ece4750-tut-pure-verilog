@@ -60,7 +60,6 @@
 module vc_Test();
   integer cases_done = 1;
   integer verbose;
-  integer num_failed;
   integer case_num_only;
   integer case_num = 0;
   integer next_case_num = 0;
@@ -93,8 +92,6 @@ endmodule
       $display( "   +test-case=<int>    : execute just given test case" ); \
       $display( "   +trace=<int>        : enable line tracing" ); \
       $display( "   +verbose=<int>      : enable more verbose output" ); \
-      $display( "                         1 = show failing tests" ); \
-      $display( "                         2 = show passing and failing tests" ); \
       $display( "" );                                                   \
       $finish;                                                          \
     end                                                                 \
@@ -159,7 +156,6 @@ endmodule
         $finish;                                                        \
       end                                                               \
       vc_test.cases_done = 0;                                           \
-      vc_test.num_failed = 0;                                           \
       $display( "  + Test Case %0d: %s", num_, name_ );
 
 //------------------------------------------------------------------------
@@ -168,10 +164,6 @@ endmodule
 // This should directly follow the begin-end block for the test case.
 
 `define VC_TEST_CASE_END                                                \
-      if ( (vc_test.verbose == 0) && (vc_test.num_failed > 0) ) begin   \
-        $display( "     [ FAILED ] number of failing tests: %0d",       \
-                  vc_test.num_failed );                                 \
-      end                                                               \
       vc_test.cases_done = 1;                                           \
       if ( vc_test.case_num_only != 0 )                                 \
         vc_test.next_case_num = 1023;                                   \
@@ -186,7 +178,7 @@ endmodule
 // Output some text only if verbose
 
 `define VC_TEST_NOTE( msg_ )                                            \
-  if ( vc_test.verbose > 1 )                                            \
+  if ( vc_test.verbose > 2 )                                            \
     $display( "                %s", msg_ );                             \
   if (1)
 
@@ -195,7 +187,7 @@ endmodule
 //------------------------------------------------------------------------
 
 `define VC_TEST_NOTE_INPUTS_1( in1_ )                                   \
-  if ( vc_test.verbose > 1 )                                            \
+  if ( vc_test.verbose > 0 )                                            \
     $display( "                Inputs:%s", "in1_ = ", in1_ );           \
   if (1)
 
@@ -204,7 +196,7 @@ endmodule
 //------------------------------------------------------------------------
 
 `define VC_TEST_NOTE_INPUTS_2( in1_, in2_ )                             \
-  if ( vc_test.verbose > 1 )                                            \
+  if ( vc_test.verbose > 0 )                                            \
     $display( "                Inputs:%s = %x,%s = %x",                 \
               "in1_", in1_, "in2_", in2_ );                             \
   if (1)
@@ -214,7 +206,7 @@ endmodule
 //------------------------------------------------------------------------
 
 `define VC_TEST_NOTE_INPUTS_3( in1_, in2_, in3_ )                       \
-  if ( vc_test.verbose > 1 )                                            \
+  if ( vc_test.verbose > 0 )                                            \
     $display( "                Inputs:%s = %x,%s = %x,%s = %x",         \
               "in1_", in1_, "in2_", in2_, "in3_", in3_ );               \
   if (1)
@@ -224,7 +216,7 @@ endmodule
 //------------------------------------------------------------------------
 
 `define VC_TEST_NOTE_INPUTS_4( in1_, in2_, in3_, in4_ )                 \
-  if ( vc_test.verbose > 1 )                                            \
+  if ( vc_test.verbose > 0 )                                            \
     $display( "                Inputs:%s = %x,%s = %x,%s = %x,%s = %x", \
               "in1_", in1_, "in2_", in2_, "in3_", in3_, "in4_", in4_ ); \
   if (1)
@@ -236,24 +228,18 @@ endmodule
 
 `define VC_TEST_NET( tval_, cval_ )                                     \
   if ( tval_ === 'hz ) begin                                            \
-    vc_test.num_failed = vc_test.num_failed + 1;                        \
-    if ( vc_test.verbose > 0 ) begin                                    \
-      $display( "     [ FAILED ]%s, expected = %x, actual = %x",        \
-                "tval_", cval_, tval_ );                                \
-    end                                                                 \
+    $display( "     [ FAILED ]%s, expected = %x, actual = %x",          \
+              "tval_", cval_, tval_ );                                  \
   end                                                                   \
   else                                                                  \
   casez ( tval_ )                                                       \
     cval_ :                                                             \
-      if ( vc_test.verbose > 1 )                                        \
+      if ( vc_test.verbose > 0 )                                        \
          $display( "     [ passed ]%s, expected = %x, actual = %x",     \
                    "tval_", cval_, tval_ );                             \
     default : begin                                                     \
-      vc_test.num_failed = vc_test.num_failed + 1;                      \
-      if ( vc_test.verbose > 0 ) begin                                  \
-        $display( "     [ FAILED ]%s, expected = %x, actual = %x",      \
-                  "tval_", cval_, tval_ );                              \
-      end                                                               \
+      $display( "     [ FAILED ]%s, expected = %x, actual = %x",        \
+                "tval_", cval_, tval_ );                                \
     end                                                                 \
   endcase                                                               \
   if (1)
@@ -265,22 +251,8 @@ endmodule
 // useful if we want to fail due to some reason other than equality.
 
 `define VC_TEST_FAIL( tval_, msg_ )                                     \
-  vc_test.num_failed = vc_test.num_failed + 1;                          \
-  if ( vc_test.verbose > 0 ) begin                                      \
-    $display( "     [ FAILED ]%s, actual = %x, %s",                     \
-              "tval_", tval_, msg_ );                                   \
-  end                                                                   \
-  if (1)
-
-//------------------------------------------------------------------------
-// VC_TEST_INCREMENT_NUM_FAILED( num_failed_ )
-//------------------------------------------------------------------------
-// This macro is used to increment the count of failing tests. This is
-// useful when we have child modules that are doing the actual test
-// verification (e.g., test sinks).
-
-`define VC_TEST_INCREMENT_NUM_FAILED( num_failed_ )                     \
-  vc_test.num_failed = vc_test.num_failed + num_failed_;                \
+  $display( "     [ FAILED ]%s, actual = %x, %s",                       \
+            "tval_", tval_, msg_ );                                     \
   if (1)
 
 `endif /* VC_TEST_V */
