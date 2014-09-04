@@ -22,12 +22,10 @@ module vc_Reg
 #(
   parameter p_nbits = 1
 )(
-  input                clk, // Clock input
-  output [p_nbits-1:0] q,   // Data output
-  input  [p_nbits-1:0] d    // Data input (sampled on rising clk edge)
+  input  logic               clk, // Clock input
+  output logic [p_nbits-1:0] q,   // Data output
+  input  logic [p_nbits-1:0] d    // Data input
 );
-
-  reg q;
 
   always @( posedge clk )
     q <= d;
@@ -43,13 +41,11 @@ module vc_ResetReg
   parameter p_nbits       = 1,
   parameter p_reset_value = 0
 )(
-  input                clk,   // Clock input
-  input                reset, // Sync reset input (sampled on rising edge)
-  output [p_nbits-1:0] q,     // Data output
-  input  [p_nbits-1:0] d      // Data input (sampled on rising clk edge)
+  input  logic               clk,   // Clock input
+  input  logic               reset, // Sync reset input
+  output logic [p_nbits-1:0] q,     // Data output
+  input  logic [p_nbits-1:0] d      // Data input
 );
-
-  reg q;
 
   always @( posedge clk )
     q <= reset ? p_reset_value : d;
@@ -64,14 +60,12 @@ module vc_EnReg
 #(
   parameter p_nbits = 1
 )(
-  input                clk,   // Clock input
-  input                reset, // Sync reset input (sampled on rising edge)
-  output [p_nbits-1:0] q,     // Data output
-  input  [p_nbits-1:0] d,     // Data input (sampled on rising clk edge)
-  input                en     // Enable input (sampled on rising clk edge)
+  input  logic               clk,   // Clock input
+  input  logic               reset, // Sync reset input
+  output logic [p_nbits-1:0] q,     // Data output
+  input  logic [p_nbits-1:0] d,     // Data input
+  input  logic               en     // Enable input
 );
-
-  reg q;
 
   always @( posedge clk )
     if ( en )
@@ -79,9 +73,11 @@ module vc_EnReg
 
   // Assertions
 
+  `ifndef SYNTHESIS
   always @( posedge clk )
     if ( !reset )
       `VC_ASSERT_NOT_X( en );
+  `endif /* SYNTHESIS */
 
 endmodule
 
@@ -94,14 +90,12 @@ module vc_EnResetReg
   parameter p_nbits       = 1,
   parameter p_reset_value = 0
 )(
-  input                clk,   // Clock input
-  input                reset, // Sync reset input (sampled on rising edge)
-  output [p_nbits-1:0] q,     // Data output
-  input  [p_nbits-1:0] d,     // Data input (sampled on rising clk edge)
-  input                en     // Enable input (sampled on rising clk edge)
+  input  logic               clk,   // Clock input
+  input  logic               reset, // Sync reset input
+  output logic [p_nbits-1:0] q,     // Data output
+  input  logic [p_nbits-1:0] d,     // Data input
+  input  logic               en     // Enable input
 );
-
-  reg q;
 
   always @( posedge clk )
     if ( reset || en )
@@ -109,9 +103,11 @@ module vc_EnResetReg
 
   // Assertions
 
+  `ifndef SYNTHESIS
   always @( posedge clk )
     if ( !reset )
       `VC_ASSERT_NOT_X( en );
+  `endif /* SYNTHESIS */
 
 endmodule
 

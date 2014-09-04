@@ -18,13 +18,13 @@ module vc_TestSource
 
   // Source message interface
 
-  output                   val,
-  input                    rdy,
-  output [p_msg_nbits-1:0] msg,
+  output logic                   val,
+  input  logic                   rdy,
+  output logic [p_msg_nbits-1:0] msg,
 
   // Goes high once all source msgs has been issued
 
-  output done
+  output logic                   done
 );
 
   //----------------------------------------------------------------------
@@ -68,10 +68,27 @@ module vc_TestSource
   // Combinational logic
   //----------------------------------------------------------------------
 
-  // We use a behavioral hack to easily detect when we have gone off the
-  // end of the valid messages in the memory.
+  // We use a behavioral hack to easily detect when we have sent all the
+  // valid messages in the test source. We used to use this:
+  //
+  //  assign done = !reset_reg && ( m[index] === {p_msg_nbits{1'bx}} );
+  //
+  // but Ackerley Tng found an issue with this approach. You can see an
+  // example in this journal post:
+  //
+  //  http://brg.csl.cornell.edu/wiki/alt53-2014-03-08
+  //
+  // So now we keep the done signal high until the test source is reset.
 
-  assign done = !reset_reg && ( m[index] === {p_msg_nbits{1'bx}} );
+  always @ ( * ) begin
+    if ( reset_reg ) begin
+      done <= 1'b0;
+    end else begin
+      if ( ~done ) begin
+        done <= m[index] === {p_msg_nbits{1'bx}};
+      end
+    end
+  end
 
   // Set the source message appropriately
 

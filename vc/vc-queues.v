@@ -55,10 +55,10 @@ module vc_QueueCtrl1
   wire full_next;
 
   always @ (posedge clk) begin
-    full <= reset ? 0 : full_next;
+    full <= reset ? 1'b0 : full_next;
   end
 
-  assign num_free_entries = full ? 0 : 1;
+  assign num_free_entries = full ? 1'b0 : 1'b1;
 
   // Determine if pipeline or bypass behavior is enabled
 

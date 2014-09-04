@@ -148,8 +148,23 @@ endmodule
 // test case number and this will cause multiple test cases to run
 // concurrently jumbling the corresponding output.
 
+// NOTE: Ackerley Tng changed this from always @(*) to explicitly denote
+// the four signals the test case should trigger off of. This fixed some
+// subtle bug he was seeing, and he included this comment in his code:
+//
+// "Note the use of a very specific always block sensitivity list here.
+// We want to be very specific (instead of using always @ (*)) so that we
+// don't want _vc_test_cases_done or any other variable to change by
+// accident just because a signal mentioned in the code between the two
+// macros (where the macros are used) changes."
+//
+// Not sure I absolutely understand this, but it seems to make sense. We
+// really only want the test case to fire when the case number
+// increments. -cbatten
+
 `define VC_TEST_CASE_BEGIN( num_, name_ )                               \
-  always @(*) begin                                                     \
+  always @( vc_test.case_num or vc_test.cases_done or                   \
+            vc_test.verbose or vc_test.case_num_only ) begin            \
     if ( vc_test.case_num == num_ ) begin                               \
       if ( vc_test.cases_done == 0 ) begin                              \
         $display( "\n FAILED: Test case %s has the same test case number (%x) as another test case!\n", name_, num_ ); \

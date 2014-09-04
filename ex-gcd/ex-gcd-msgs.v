@@ -29,6 +29,10 @@ typedef struct packed {
 //------------------------------------------------------------------------
 // Trace request message
 //------------------------------------------------------------------------
+// We use this module to create a line trace for a request message being
+// passed over a val/rdy interface, and to also enable us to easily see
+// the fields in the message from gtkwave (i.e., we can just view the
+// field variables within this module instance).
 
 module ex_gcd_GcdReqMsgTrace
 (
