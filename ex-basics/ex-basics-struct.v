@@ -33,9 +33,9 @@ module top;
 
     point_b = point_a;
 
-    $display( "point_a.x = %x", point_a.x );
-    $display( "point_a.y = %x", point_a.y );
-    $display( "point_a.z = %x", point_a.z );
+    $display( "point_b.x = %x", point_b.x );
+    $display( "point_b.y = %x", point_b.y );
+    $display( "point_b.z = %x", point_b.z );
 
     // Assign structs to bit vector
 

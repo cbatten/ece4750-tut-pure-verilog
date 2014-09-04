@@ -23,7 +23,7 @@ module top;
     c = a & b;   $display( "0 & 1  = %x ", c );
     c = a | b;   $display( "0 | 1  = %x ", c );
     c = a ^ b;   $display( "0 ^ 1  = %x ", c );
-    c = ~b;      $display( "~0     = %x ", c );
+    c = ~b;      $display( "~1     = %x ", c );
 
     // Bitwise logical operators for doing AND, OR, XOR, and NOT with X
 
@@ -33,7 +33,7 @@ module top;
     c = a & b;   $display( "0 & x  = %x ", c );
     c = a | b;   $display( "0 | x  = %x ", c );
     c = a ^ b;   $display( "0 ^ x  = %x ", c );
-    c = ~b;      $display( "~0     = %x ", c );
+    c = ~b;      $display( "~x     = %x ", c );
 
     // Boolean logical operators
 

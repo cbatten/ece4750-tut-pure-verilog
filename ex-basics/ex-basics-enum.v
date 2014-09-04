@@ -37,7 +37,7 @@ module top;
     $display( "( STATE_A != STATE_A ) = %x", result );
 
     result = ( state != STATE_B );
-    $display( "( STATE_A != STATE_A ) = %x", result );
+    $display( "( STATE_A != STATE_B ) = %x", result );
 
   end
 

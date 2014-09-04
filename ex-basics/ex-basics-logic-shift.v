@@ -22,14 +22,14 @@ module top;
 
     A = 8'b0110_0100;
 
-    C = $signed(A) >>> 1;  $display( "8'b0110_0100 >>> 3 = %b", C );
-    C = $signed(A) >>> 2;  $display( "8'b0110_0100 >>> 3 = %b", C );
+    C = $signed(A) >>> 1;  $display( "8'b0110_0100 >>> 1 = %b", C );
+    C = $signed(A) >>> 2;  $display( "8'b0110_0100 >>> 2 = %b", C );
     C = $signed(A) >>> 3;  $display( "8'b0110_0100 >>> 3 = %b", C );
 
     A = 8'b1110_0101;
 
-    C = $signed(A) >>> 3;  $display( "8'b1110_0101 >>> 3 = %b", C );
-    C = $signed(A) >>> 3;  $display( "8'b1110_0101 >>> 3 = %b", C );
+    C = $signed(A) >>> 1;  $display( "8'b1110_0101 >>> 1 = %b", C );
+    C = $signed(A) >>> 2;  $display( "8'b1110_0101 >>> 2 = %b", C );
     C = $signed(A) >>> 3;  $display( "8'b1110_0101 >>> 3 = %b", C );
 
     // Variable shift amount for logical shifts

@@ -35,7 +35,7 @@ module top;
     C = A & B;    $display( "4'b0101 &  4'b00xx = %b", C );
     C = A | B;    $display( "4'b0101 |  4'b00xx = %b", C );
     C = A ^ B;    $display( "4'b0101 ^  4'b00xx = %b", C );
-    C = A ^~ B;   $display( "4'b0101 ^~ 4'b0011 = %b", C );
+    C = A ^~ B;   $display( "4'b0101 ^~ 4'b00xx = %b", C );
     C = ~B;       $display( "~4'b00xx           = %b", C );
 
     // Reduction operators

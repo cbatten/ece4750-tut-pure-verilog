@@ -23,7 +23,7 @@ module top;
 
     sel = 1'b1;
 
-    if ( sel == 1'b00 ) begin
+    if ( sel == 1'b0 ) begin
       a = 8'h0a;
     end
     else begin
