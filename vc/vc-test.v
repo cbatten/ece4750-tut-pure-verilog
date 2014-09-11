@@ -154,7 +154,7 @@ endmodule
 //
 // "Note the use of a very specific always block sensitivity list here.
 // We want to be very specific (instead of using always @ (*)) so that we
-// don't want _vc_test_cases_done or any other variable to change by
+// don't want vc_test.cases_done or any other variable to change by
 // accident just because a signal mentioned in the code between the two
 // macros (where the macros are used) changes."
 //

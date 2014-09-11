@@ -37,28 +37,29 @@ module TestHarness
   )
   src
   (
-    .clk        (clk),
-    .reset      (reset),
+    .clk         (clk),
+    .reset       (reset),
 
-    .val        (src_val),
-    .rdy        (src_rdy),
-    .msg        (src_msg),
+    .val         (src_val),
+    .rdy         (src_rdy),
+    .msg         (src_msg),
 
-    .done       (src_done)
+    .done        (src_done)
   );
 
   ex_gcd_GcdUnit gcd
   (
-    .clk        (clk),
-    .reset      (reset),
+    .clk         (clk),
+    .reset       (reset),
 
-    .req_msg    (src_msg),
-    .req_val    (src_val),
-    .req_rdy    (src_rdy),
+    .req_val     (src_val),
+    .req_rdy     (src_rdy),
+    .req_a       (src_msg[31:16]),
+    .req_b       (src_msg[15:0]),
 
-    .resp_msg   (sink_msg),
-    .resp_val   (sink_val),
-    .resp_rdy   (sink_rdy)
+    .resp_result (sink_msg),
+    .resp_val    (sink_val),
+    .resp_rdy    (sink_rdy)
   );
 
   vc_TestSink
@@ -69,14 +70,14 @@ module TestHarness
   )
   sink
   (
-    .clk        (clk),
-    .reset      (reset),
+    .clk         (clk),
+    .reset       (reset),
 
-    .val        (sink_val),
-    .rdy        (sink_rdy),
-    .msg        (sink_msg),
+    .val         (sink_val),
+    .rdy         (sink_rdy),
+    .msg         (sink_msg),
 
-    .done       (sink_done)
+    .done        (sink_done)
   );
 
   assign done = src_done && sink_done;
@@ -253,4 +254,3 @@ module top;
   end
 
 endmodule
-

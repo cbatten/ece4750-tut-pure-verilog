@@ -14,6 +14,17 @@
 AC_DEFUN([MVABS_PROG_VERILOG_COMPILER],
 [
 
+  # First check for verilator. We need verilator for linting.
+
+  # AC_CHECK_PROGS([verilator],[verilator],[no])
+  # AS_IF([test "${verilator}" = "no"],
+  # [
+  #   AC_MSG_ERROR([Modular Verilog/ASIC Build System requires verilator])
+  # ])
+  #
+  # vlint="verilator"
+  # vlint_flags="-sv --lint-only"
+
   # First check for iverilog. We need iverilog even when we use vcs,
   # since we use iverilog as the verilog preprocessor.
 
@@ -66,6 +77,8 @@ AC_DEFUN([MVABS_PROG_VERILOG_COMPILER],
 
   # Substitute variables into Makefile
 
+  AC_SUBST([vlint])
+  AC_SUBST([vlint_flags])
   AC_SUBST([vpp])
   AC_SUBST([vpp_flags])
   AC_SUBST([vcomp])

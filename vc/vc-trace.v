@@ -5,6 +5,14 @@
 `ifndef VC_TRACE_V
 `define VC_TRACE_V
 
+// NOTE: This macro is declared outside of the module to allow some vc
+// modules to see it and use it in their own params. Verilog does not
+// allow other modules to hierarchically reference the nbits localparam
+// inside this module in constant expressions (e.g., localparams).
+
+`define VC_TRACE_NCHARS 512
+`define VC_TRACE_NBITS  512*8
+
 module vc_Trace
 (
   input clk,
@@ -19,6 +27,8 @@ module vc_Trace
   // NOTE: If you change these, then you also need to change the
   // hard-coded constant in the declaration of the trace function at the
   // bottom of this file.
+  // NOTE: You would also need to change the VC_TRACE_NBITS and
+  // VC_TRACE_NCHARS macro at the top of this file.
 
   localparam nchars = 512;
   localparam nbits  = 512*8;

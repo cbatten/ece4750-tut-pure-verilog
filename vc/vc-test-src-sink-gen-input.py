@@ -1,5 +1,5 @@
 #=========================================================================
-# vc-test-src-sink-input-gen
+# vc-test-src-sink-gen-input
 #=========================================================================
 # Script to generate inputs for simple source/sink tests.
 

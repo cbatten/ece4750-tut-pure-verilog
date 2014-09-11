@@ -41,44 +41,45 @@ module TestHarness
 
   vc_TestRandDelaySource#(32) src
   (
-    .clk       (clk),
-    .reset     (reset),
+    .clk         (clk),
+    .reset       (reset),
 
-    .max_delay (src_max_delay),
+    .max_delay   (src_max_delay),
 
-    .val       (src_val),
-    .rdy       (src_rdy),
-    .msg       (src_msg),
+    .val         (src_val),
+    .rdy         (src_rdy),
+    .msg         (src_msg),
 
-    .done      (src_done)
+    .done        (src_done)
   );
 
   `EX_GCD_IMPL gcd
   (
-    .clk       (clk),
-    .reset     (reset),
+    .clk         (clk),
+    .reset       (reset),
 
-    .req_msg   (src_msg),
-    .req_val   (src_val),
-    .req_rdy   (src_rdy),
+    .req_val     (src_val),
+    .req_rdy     (src_rdy),
+    .req_a       (src_msg[31:16]),
+    .req_b       (src_msg[15:0]),
 
-    .resp_msg  (sink_msg),
-    .resp_val  (sink_val),
-    .resp_rdy  (sink_rdy)
+    .resp_result (sink_msg),
+    .resp_val    (sink_val),
+    .resp_rdy    (sink_rdy)
   );
 
   vc_TestRandDelaySink#(16) sink
   (
-    .clk        (clk),
-    .reset      (reset),
+    .clk         (clk),
+    .reset       (reset),
 
-    .max_delay  (sink_max_delay),
+    .max_delay   (sink_max_delay),
 
-    .val        (sink_val),
-    .rdy        (sink_rdy),
-    .msg        (sink_msg),
+    .val         (sink_val),
+    .rdy         (sink_rdy),
+    .msg         (sink_msg),
 
-    .done       (sink_done)
+    .done        (sink_done)
   );
 
   assign done = src_done && sink_done;
@@ -261,4 +262,3 @@ module top;
 
   `VC_TEST_SUITE_END
 endmodule
-

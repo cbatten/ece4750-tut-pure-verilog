@@ -1,15 +1,15 @@
 //========================================================================
-// Verilog Components: Test Sink with Random Delays
+// Verilog Components: Test Unordered Sink with Random Delays
 //========================================================================
 
-`ifndef VC_TEST_RAND_DELAY_SINK_V
-`define VC_TEST_RAND_DELAY_SINK_V
+`ifndef VC_TEST_RAND_DELAY_UNORDERED_SINK_V
+`define VC_TEST_RAND_DELAY_UNORDERED_SINK_V
 
-`include "vc-TestSink.v"
+`include "vc-TestUnorderedSink.v"
 `include "vc-TestRandDelay.v"
 `include "vc-trace.v"
 
-module vc_TestRandDelaySink
+module vc_TestRandDelayUnorderedSink
 #(
   parameter p_msg_nbits = 1,
   parameter p_num_msgs  = 1024
@@ -60,7 +60,7 @@ module vc_TestRandDelaySink
   // Test sink
   //----------------------------------------------------------------------
 
-  vc_TestSink#(p_msg_nbits,p_num_msgs) sink
+  vc_TestUnorderedSink#(p_msg_nbits,p_num_msgs) sink
   (
     .clk        (clk),
     .reset      (reset),
@@ -77,7 +77,6 @@ module vc_TestRandDelaySink
   //----------------------------------------------------------------------
 
   reg [`VC_TRACE_NBITS_TO_NCHARS(p_msg_nbits)*8-1:0] msg_str;
-
   `VC_TRACE_BEGIN
   begin
     $sformat( msg_str, "%x", msg );
@@ -87,5 +86,5 @@ module vc_TestRandDelaySink
 
 endmodule
 
-`endif /* VC_TEST_RAND_DELAY_SINK */
+`endif /* VC_TEST_RAND_DELAY_UNORDERED_SINK */
 

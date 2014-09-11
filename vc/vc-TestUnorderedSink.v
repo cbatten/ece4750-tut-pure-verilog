@@ -1,17 +1,21 @@
 //========================================================================
-// Verilog Components: Test Sink
+// Verilog Components: Test Unordered Sink
 //========================================================================
+// This is similar to TestSink, except the messages it expects can come in
+// any order.
+//
 // p_sim_mode should be set to one in simulators. This will cause the
 // sink to abort after the first failure with an appropriate error
 // message.
 
-`ifndef VC_TEST_SINK_V
-`define VC_TEST_SINK_V
+`ifndef VC_TEST_UNORDERED_SINK_V
+`define VC_TEST_UNORDERED_SINK_V
 
 `include "vc-regs.v"
 `include "vc-test.v"
+`include "vc-trace.v"
 
-module vc_TestSink
+module vc_TestUnorderedSink
 #(
   parameter p_msg_nbits = 1,
   parameter p_num_msgs  = 1024,
@@ -47,20 +51,9 @@ module vc_TestSink
 
   reg [p_msg_nbits-1:0] m[p_num_msgs-1:0];
 
-  // Index register pointing to next message to verify
+  // Bitmask that indicates seen messages
 
-  wire                     index_en;
-  wire [c_index_nbits-1:0] index_next;
-  wire [c_index_nbits-1:0] index;
-
-  vc_EnResetReg#(c_index_nbits,{c_index_nbits{1'b0}}) index_reg
-  (
-    .clk   (clk),
-    .reset (reset),
-    .en    (index_en),
-    .d     (index_next),
-    .q     (index)
-  );
+  reg [p_num_msgs-1:0] seen;
 
   // Register reset
 
@@ -72,20 +65,19 @@ module vc_TestSink
   // Combinational logic
   //----------------------------------------------------------------------
 
-  // We use a behavioral hack to easily detect when we have gone off the
-  // end of the valid messages in the memory.
+  // Counters for number of messages expected and received
 
-  assign done = !reset_reg && ( m[index] === {p_msg_nbits{1'bx}} );
+  reg [31:0] num_expected;
+  reg [31:0] num_seen;
+
+  // We check number of expected and seen, and when they are the same, we
+  // are done
+
+  assign done = !reset_reg && ( num_seen >= num_expected );
 
   // Sink message interface is ready as long as we are not done
 
   assign rdy = !reset_reg && !done;
-
-  // We bump the index pointer every time we successfully receive a
-  // message, otherwise the index stays the same.
-
-  assign index_en   = val && rdy;
-  assign index_next = index + 1'b1;
 
   // The go signal is high when a message is transferred
 
@@ -94,6 +86,10 @@ module vc_TestSink
   //----------------------------------------------------------------------
   // Verification logic
   //----------------------------------------------------------------------
+
+  // Index register that we use to check m
+
+  reg [31:0] index;
 
   reg        failed;
   reg  [3:0] verbose;
@@ -106,31 +102,76 @@ module vc_TestSink
   always @( posedge clk ) begin
     if ( reset ) begin
       failed <= 0;
+
+      // we clear the seen bitmask and counters on reset
+      seen <= 0;
+      num_seen <= 0;
+      num_expected <= 0;
+
+    end
+    // because reset is more expensive because of looping through an
+    // array, for the time being, using this hack to reset only once
+    else if ( !reset && reset_reg ) begin
+
+      begin: COUNT_EXPECTED_LOOP
+        for ( index = 0; index < p_num_msgs; index = index + 1 ) begin
+          // we break from the loop if we see Xs which marks the end
+          if ( m[index] === {p_msg_nbits{1'bx}} ) begin
+            disable COUNT_EXPECTED_LOOP;
+          end else begin
+            // note: this is deliberately a blocking assignment
+            num_expected = num_expected + 1;
+          end
+        end
+      end
+
     end
     else if ( !reset && go ) begin
 
       if ( verbose > 0 )
         $display( "                %m checking message number %0d", index );
 
-      // Cut-and-paste from VC_TEST_NET in vc-test.v
-
-      if ( msg === 'hz ) begin
-        failed = 1;
-        $display( "     [ FAILED ] %s, expected = %x, actual = %x",
-                  "msg", m[index], msg );
-      end
-      else
-        casez ( msg )
-          m[index] :
-            if ( verbose > 0 )
-               $display( "     [ passed ] %s, expected = %x, actual = %x",
-                         "msg", m[index], msg );
-          default : begin
-            failed = 1;
-            $display( "     [ FAILED ] %s, expected = %x, actual = %x",
-                      "msg", m[index], msg );
+      // loop over m to see if we expect this message. also note that
+      // we're labeling this loop to be able to disable it (break)
+      begin: VERIFY_LOOP
+        for ( index = 0; index <= num_expected; index = index + 1 ) begin
+          // if we haven't encountered this message, then it's failure
+          if ( index == num_expected ) begin
+            `VC_TEST_FAIL( msg, "arrived message not expected in sink." );
           end
-        endcase
+          // if we found the message, then we call VC_TEST_NET and mark it
+          // as seen
+          else if ( msg === m[index] && !seen[index] ) begin
+
+            // Cut-and-paste from VC_TEST_NET in vc-test.v
+
+            if ( msg === 'hz ) begin
+              failed = 1;
+              $display( "     [ FAILED ] %s, expected = %x, actual = %x",
+                        "msg", m[index], msg );
+            end
+            else
+              casez ( msg )
+                m[index] :
+                  if ( verbose > 0 )
+                     $display( "     [ passed ] %s, expected = %x, actual = %x",
+                               "msg", m[index], msg );
+                default : begin
+                  failed = 1;
+                  $display( "     [ FAILED ] %s, expected = %x, actual = %x",
+                            "msg", m[index], msg );
+                end
+              endcase
+
+            seen[index] <= 1'b1;
+            // we break if we have seen this
+            disable VERIFY_LOOP;
+          end
+        end
+      end
+
+      // regardless of fail or pass, we mark this as a seen message
+      num_seen <= num_seen + 1;
 
       if ( p_sim_mode && (failed == 1) ) begin
         $display( "" );
@@ -165,7 +206,6 @@ module vc_TestSink
   //----------------------------------------------------------------------
 
   reg [`VC_TRACE_NBITS_TO_NCHARS(p_msg_nbits)*8-1:0] msg_str;
-
   `VC_TRACE_BEGIN
   begin
     $sformat( msg_str, "%x", msg );
@@ -175,4 +215,5 @@ module vc_TestSink
 
 endmodule
 
-`endif /* VC_TEST_SINK_V */
+`endif /* VC_TEST_UNORDERED_SINK_V */
+

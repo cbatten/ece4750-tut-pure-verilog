@@ -5,7 +5,6 @@
 `ifndef GCD_GCD_UNIT_FL_V
 `define GCD_GCD_UNIT_FL_V
 
-`include "ex-gcd-msgs.v"
 `include "vc-assert.v"
 `include "vc-trace.v"
 
@@ -16,33 +15,21 @@ module ex_gcd_GcdUnitFL
 
   input  logic             req_val,
   output logic             req_rdy,
-  input  ex_gcd_req_msg_t  req_msg,
+  input  logic [15:0]      req_a,
+  input  logic [15:0]      req_b,
 
   output logic             resp_val,
   input  logic             resp_rdy,
-  output ex_gcd_resp_msg_t resp_msg
+  output logic [15:0]      resp_result
 );
-
-  //----------------------------------------------------------------------
-  // Trace request message
-  //----------------------------------------------------------------------
-
-  ex_gcd_GcdReqMsgTrace req_msg_trace
-  (
-    .clk   (clk),
-    .reset (reset),
-    .val   (req_val),
-    .rdy   (req_rdy),
-    .msg   (req_msg)
-  );
 
   //----------------------------------------------------------------------
   // Implement GCD with Euclid's Algorithm
   //----------------------------------------------------------------------
 
-  logic [`EX_GCD_REQ_MSG_A_NBITS-1:0]       A;
-  logic [`EX_GCD_REQ_MSG_B_NBITS-1:0]       B;
-  logic [`EX_GCD_RESP_MSG_RESULT_NBITS-1:0] temp;
+  logic [15:0] A;
+  logic [15:0] B;
+  logic [15:0] temp;
 
   logic full, req_go, resp_go, done;
 
@@ -70,8 +57,8 @@ module ex_gcd_GcdUnitFL
     // into our internal buffer and update the buffer full bit.
 
     if ( req_go ) begin
-      A    = req_msg.a;
-      B    = req_msg.b;
+      A    = req_a;
+      B    = req_b;
       full = 1;
     end
 
@@ -90,7 +77,7 @@ module ex_gcd_GcdUnitFL
         done = 1;
     end
 
-    resp_msg.result <= A;
+    resp_result <= A;
 
     // The output message is valid if the buffer is full
 
@@ -123,16 +110,17 @@ module ex_gcd_GcdUnitFL
 
   `ifndef SYNTHESIS
 
-  logic [`VC_TRACE_NBITS_TO_NCHARS(`EX_GCD_RESP_MSG_RESULT_NBITS)*8-1:0] str;
+  logic [`VC_TRACE_NBITS_TO_NCHARS(16)*8-1:0] str;
 
   `VC_TRACE_BEGIN
   begin
 
-    req_msg_trace.trace( trace_str );
+    $sformat( str, "%x:%x", req_a, req_b );
+    vc_trace.append_val_rdy_str( trace_str, req_val, req_rdy, str );
 
     vc_trace.append_str( trace_str, "()" );
 
-    $sformat( str, "%x", resp_msg );
+    $sformat( str, "%x", resp_result );
     vc_trace.append_val_rdy_str( trace_str, resp_val, resp_rdy, str );
 
   end

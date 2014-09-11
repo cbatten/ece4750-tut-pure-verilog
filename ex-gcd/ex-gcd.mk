@@ -5,13 +5,11 @@
 ex_gcd_deps = vc
 
 ex_gcd_srcs = \
-  ex-gcd-msgs.v \
   ex-gcd-GcdUnitFL.v \
   ex-gcd-GcdUnit.v \
   ex-gcd-test-harness.v \
 
 ex_gcd_test_srcs = \
-  ex-gcd-msgs.t.v \
   ex-gcd-GcdUnitFL.t.v \
   ex-gcd-GcdUnit.t.v \
 
